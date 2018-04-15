@@ -190,3 +190,59 @@ def intercambiar_aux(num,pos):
         return 0
     else: return (num%10)*10**(pos+1) + ((num//10)%10)*10**(pos) + intercambiar_aux(num//100, pos+2)
 
+"""14"""
+
+def invertir(num):
+    if isinstance(num , int) and num >= 100 and num <= 999:
+        return invertir_aux(abs(num), 2)
+    else: return "Error"
+
+def invertir_aux(num, pos):
+    if num == 0:
+        return 0
+    else: return (num%10)*10**pos + invertir_aux(num//10, pos-1)
+
+"""15"""
+
+def RegresarDecimal(num):
+    if isinstance(num, float):
+        return RegresarDecimal_aux(num)
+    else: return "Error"
+
+def RegresarDecimal_aux(num):
+    return abs(num - int(num))
+
+"""16"""
+
+def Bisiesto():
+    valor = input("Ingrese un numero:")
+    year = int(valor)
+    if year > 1582:
+        if BisiestoGregoriano(year):
+            return print(year, "es bisiesto")
+        else: return print(year, "no es bisiesto")
+    elif BisiestoJuliano(year):
+        return print(year, "es bisiesto")
+    else: return print(year, "no es bisiesto")
+
+def BisiestoGregoriano(year):
+    if year % 400 == 0:
+        return True
+    elif BisiestoGregoriano_aux(year):
+        return True
+    else: return False
+
+def BisiestoGregoriano_aux(year):
+    if year % 10 == 0:
+        return BisiestoGregoriano_aux(year//10)
+    elif year % 4 == 0:
+        return True
+    else: return False
+
+def BisiestoJuliano(year):
+    if year % 4 == 0:
+        return True
+    else: return False
+
+
+
