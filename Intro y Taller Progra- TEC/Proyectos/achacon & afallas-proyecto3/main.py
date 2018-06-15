@@ -490,7 +490,7 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
                 P1Crashed = True
             for mina in lista_impacto_minas_P1:
                 revChannel2.play(Explode)
-                PuntuacionP1 -= 400
+                PuntuacionP1 -= 800
                 Jugador1.speed = 0
         if P2 == True:
             # Jugador 2
@@ -526,7 +526,7 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
                     P2Crashed = True
                 for mina in lista_impacto_minas_P2:
                     revChannel2.play(Explode)
-                    PuntuacionP2 -= 400
+                    PuntuacionP2 -= 800
                     Jugador2.speed = 0
         # Aqui se maneja el movimiento de los sprites
         if Joystick == b'9\r\n':
@@ -562,7 +562,9 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
         lista_impacto_minasYbalas_P1 = pygame.sprite.groupcollide(ListaBalasP1, ListaMinas, True, True)
         if P2 == True:
             lista_impacto_minasYbalas_P2 = pygame.sprite.groupcollide(ListaBalasP2, ListaMinas, True, True)
-##    
+
+
+            
 ##        print(Clock.get_time)
 ##        print("score1:", PuntuacionP1)
 ##        print(ListaMinas.sprites())
@@ -581,6 +583,8 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
 ##        print(pantalla.get_at((Trafico3.x,Trafico3.y)))
 ##        print(dt)
 ##        print(ListaBalasP1.sprites())
+
+            
         if len(ListaBalasP1) == 0:
             last_bullet_P1 = True
         if P2 == True:
@@ -588,9 +592,11 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
                 last_bullet_P2 = True
 
         for Balas in lista_impacto_minasYbalas_P1:
+            PuntuacionP1 += 50
             revChannel2.play(Explode)
         if P2 == True:
             for Balas in lista_impacto_minasYbalas_P2:
+                PuntuacionP2 += 50
                 revChannel2.play(Explode)
 
         if P1Crashed != True:
