@@ -112,6 +112,7 @@ def Mapa1():
     Player_count(Pista)
 
 def MapaSiguiente(ListaConParametros):
+    """Esta funcion maneja la eleccion del mapa al azar, cuando es la segunda o tercera ronda"""
     if len(ListaConParametros) == 4:
         Pista = random.choice([Mapa("Image/PistaTres.png", 2,2, (16,366),(6,326), 3),Mapa("Image/PistaDos.png", 2,2, (16,366),(6,326), 2),Mapa("Image/PistaUno.png", 20,20, (30,280),(20,250), 1)])
         Jugador1 = Jugador("Image/JugadorUno.png", Pista.P1start_position[0], Pista.P1start_position[1])
@@ -196,6 +197,8 @@ def gameFinish(text):
         Clock.tick(15)
 
 def gameContinue(text, players, GamesCounter,score1 = None,score2 = None):
+    """Este menu le da la opcion al usuario de seguir jugando despues de completar
+        una ronda."""
     Continuar = True
     if score2 != None:
         while Continuar:
@@ -271,19 +274,19 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
         CrashMax = 2
         
     # Variables especificas para el jugador 2, si esta activado
+
     if P2:
         P2vuelta = False
         P2Crashed = False
         P2Laps = 0
         last_bullet_P2 = True
+
     # Instancias de jugadores
+    
     Jugador1 = players[0]
-##    ListaSprites.add(Jugador1)
     if P2 == True:
         Jugador2 = players[1]
-##        ListaSprites.add(Jugador2)
 
-##    lista_impacto_minas = pygame.sprite.spritecollide(Jugador1, ListaMinas, True)
     # Se definen los drones para el mapa 1
 
     if Pista.mapnum == 1:
@@ -337,6 +340,7 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
         ListaSprites.add(Trafico6)
         ListaSprites.add(Trafico7)
         ListaSprites.add(Trafico8)
+    # Se definen los drones para el mapa 3
     if Pista.mapnum == 3:
         Trafico1 = Dummy(pantalla ,0,35,100)
         Trafico2 = Dummy(pantalla ,90,400,30)
@@ -364,19 +368,25 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
         ListaSprites.add(Trafico8)
         
     while not gameExit:
+
+        # Se inicia el Joystick
         Joystick = Control()
+        
+        # Se define el tiempo
         T1 = time.time()
         dt = 180 - int(T1 - T0)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameExit = not gameExit
                 pygame.quit()
                 quit()
-        # Logica del juego, aqui se controlan las vueltas que cada jugador ha completado, y lo que pasa cuando un jugador completa la carrera o si ambos jugadores se estrellan
+        # Logica del juego, aqui se controlan las vueltas que cada jugador ha completado, y lo que pasa cuando un jugador completa la carrera o si ambos jugadores se estrellan, y cuando se acaba el tiempo
         if int(dt) == 0:
             gameExit = not gameExit
             gameFinish('Se acabo el tiempo.')
         if PlayersCrashed == CrashMax:
+            # Se vacian todos los grupos para evitar que vuelvan a aparecer en una nueva partida
             revChannel1.stop()
             ListaDrones.empty()
             ListaSprites.empty
@@ -389,6 +399,7 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
                 gameFinish('Perdiste')
         if P2 == True:
             if P1Laps > MaxLaps:
+                # Aqui se determina si el jugador 1 o el jugador 2 termino las 3 vueltas
                 PuntuacionP1 += 400
                 if ContadorPartidas == 2:
                     if PuntuacionP1 > PuntuacionP2:
@@ -437,8 +448,10 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
                 ListaMinas.empty()
                 gameContinue('Pista completada', [Jugador1], ContadorPartidas+1,PuntuacionP1)
         if pantalla.get_at((int(Jugador1.x),int(Jugador1.y))) == Linea_Mitad:
+            # "Activa" la linea de meta
             P1vuelta = True
         if (P1vuelta == True) and (pantalla.get_at((int(Jugador1.x),int(Jugador1.y))) == Linea_Meta):
+            # Completa una vuelta y le da puntos al jugador
             PuntuacionP1 += 200
             P1Laps += 1
             P1vuelta = False
@@ -453,18 +466,20 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
         ## Controles de los jugadores, se definen las teclas que realizan cada accion; si se estrellan, se deshabilitan los controles.
         keys = pygame.key.get_pressed()
 
+        # Aqui se verifica si hay colisiones entre las minas y los jugadores
         lista_impacto_minas_P1 = pygame.sprite.spritecollide(Jugador1, ListaMinas, True)
         if P2 == True:
             lista_impacto_minas_P2 = pygame.sprite.spritecollide(Jugador2, ListaMinas, True)
             
         # Jugador 1
         if P1Crashed != True:
-            # Girar a la izquierda
+            # Disparar, no se puede disparar si hay un disparo existiendo en el momento
             if (keys[K_q] or Joystick == b'10\r\n') and last_bullet_P1:
                 Shoot1 = Bullet(pantalla, Jugador1.x, Jugador1.y, Jugador1.direction)
                 ListaBalasP1.add(Shoot1)
                 last_bullet_P1 = False
                 revChannel2.play(TankShoot)
+            # Girar a la izquierda
             if keys[K_a] or Joystick == b'2\r\n':
                 Jugador1.steerleft()
             # Girar a la derecha
@@ -495,6 +510,7 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
         if P2 == True:
             # Jugador 2
             if P2Crashed != True:
+                # Disparar, no se puede disparar si hay un disparo existiendo en el momento
                 if (keys[K_o] or Joystick == b'11\r\n') and last_bullet_P2:
                     Shoot2 = Bullet(pantalla, Jugador2.x, Jugador2.y, Jugador2.direction)
                     ListaBalasP2.add(Shoot2)
@@ -547,6 +563,8 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
         ListaBalasP1.update()
         if P2 == True:
             ListaBalasP2.update()
+
+        # Aqui se determinan si hay colisiones entre varios sprites, como Jugadores y drones, balas y drones
         lista_impacto_drones_P1 = pygame.sprite.spritecollide(Jugador1, ListaDrones, True)
         if P2 == True:
             lista_impacto_drones_P2 = pygame.sprite.spritecollide(Jugador2, ListaDrones, True)
@@ -564,32 +582,15 @@ def game_loop(players, Pista, GamesCounter = None, score1 = None, score2 = None)
             lista_impacto_minasYbalas_P2 = pygame.sprite.groupcollide(ListaBalasP2, ListaMinas, True, True)
 
 
-            
-##        print(Clock.get_time)
-##        print("score1:", PuntuacionP1)
-##        print(ListaMinas.sprites())
-##        print(Jugador1.rect.x, Jugador1.rect.y)
-##        print(ListaSprites.sprites())
-##        print(pantalla.get_at(pygame.mouse.get_pos()))
-##        if pantalla.get_at((Trafico1.x,Trafico1.y)) == 
-##        print(lista_impacto_minas)
-##        if P2 == True:
-##            print("score2:", PuntuacionP2)
-##        print(Trafico1.direction)
-##        print(Trafico2.direction)
-##        print(Trafico3.direction)
-##        print(Trafico4.direction)
-##        print(pantalla.get_at((Trafico2.x,Trafico2.y)))
-##        print(pantalla.get_at((Trafico3.x,Trafico3.y)))
-##        print(dt)
-##        print(ListaBalasP1.sprites())
-
+        # Aqui se determina si hay una bala del jugador existiendo
             
         if len(ListaBalasP1) == 0:
             last_bullet_P1 = True
         if P2 == True:
             if len(ListaBalasP2) == 0:
                 last_bullet_P2 = True
+
+        # Si las balas de los jugadores destruyen minas, les otorga puntos
 
         for Balas in lista_impacto_minasYbalas_P1:
             PuntuacionP1 += 50

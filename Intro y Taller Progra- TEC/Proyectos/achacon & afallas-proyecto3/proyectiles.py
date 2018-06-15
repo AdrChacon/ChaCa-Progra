@@ -29,7 +29,10 @@ def rot_center(image, rect, angle):
     
 
 class Bullet(pygame.sprite.Sprite):
+    """Esta es la clase que maneja el comportamiento, el aspecto y varias caracteristicas mas de las balas"""
     def __init__(self, display, x, y, angle):
+        """Aqui se definen varias propiedades de las balas, como la imagen en la direccion
+        del jugador, la velocidad de las balas, la posicion en x y en y"""
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.transform.rotate(pygame.image.load('Image/Bala.png'), angle)
         self.image_orig = self.image
@@ -41,8 +44,8 @@ class Bullet(pygame.sprite.Sprite):
         self.y = y +14
 
     def update(self):
-##        self.image, self.rect = rot_center(self.image_orig, self.rect, self.direction)
-##        print(self.pantalla.get_at((int(self.x),int(self.y))))
+        """Esta funcion maneja el comportamiento de las balas, su movimiento y
+        controla que no se salgan de la carretera ni de la pantalla"""
         if self.pantalla.get_at((int(self.x),int(self.y))) == Amarillo_arena:
             self.kill()
         if self.x+15 > 800 or self.x-15 < 0:
